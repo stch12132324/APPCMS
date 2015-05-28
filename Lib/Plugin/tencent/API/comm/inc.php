@@ -1,0 +1,2 @@
+<?php die('forbidden'); ?>
+{"appid":"101173611","appkey":"58eeded1f276d723cf09ba27785595ea","callback":"http://www.bjshop.cc/User-qqCallback.html","scope":"get_user_info,get_info,get_other_info","errorReport":true,"storageType":"file","host":"localhost","user":"root","password":"root","database":"test"}
