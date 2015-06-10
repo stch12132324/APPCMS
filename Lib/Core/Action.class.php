@@ -12,18 +12,19 @@ class Action extends Base{
     /*
     * äÖÈ¾Ä£°åtpl
     */
-	public function display($_tplName='',$_tpfile=''){
+	public function display($_tplName = '' , $_tpfile = '' , $_tpgroup = ''){
 		if(is_array($this->_aGVal)) extract($this->_aGVal);
 		if(is_array($this->CONFIG_LIST)) extract($this->CONFIG_LIST);
 		$action = $this->_action;
 		$module = $this->_module;
+        $group  = $_tpgroup == '' ? $this->_group : $_tpgroup;
 		if($_tplName==''){
-			include template($action,$module,$this->_group);
+			include template($action , $module , $group);
 		}else{
             if($_tpfile != ''){
-		        include template($_tplName,$_tpfile,$this->_group);
+		        include template($_tplName , $_tpfile , $group);
             }else{
-                include template($_tplName,$module,$this->_group);
+                include template($_tplName , $module , $group);
             }
 		}
 	}
