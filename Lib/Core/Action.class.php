@@ -10,7 +10,7 @@ class Action extends Base{
 	}
 
     /*
-    * äÖÈ¾Ä£°åtpl
+    * äÖÈ¾Ä£°åtpl  name dir group
     */
 	public function display($_tplName = '' , $_tpfile = '' , $_tpgroup = ''){
 		if(is_array($this->_aGVal)) extract($this->_aGVal);
