@@ -215,16 +215,38 @@ function getModuleByUrl($url){
     return $url_last[0];
 }
 
-function getNowModule(){
+//@ 获取当前module
+function getNowModule($ifGroup = 0){
     $url = $_SERVER['HTTP_X_REWRITE_URL'] == '' ? $_SERVER['REQUEST_URI'] : $_SERVER['HTTP_X_REWRITE_URL'];
     $urlArray = explode("/",$url);
     $url_last = $urlArray[1];
     $url_last = explode(".",$url_last);
     $url_last = explode("-" , $url_last[0]);
+    if($ifGroup == 1){
+        //如果有分组则排除group
+        array_shift($url_last);
+    }
     if($url_last[0] == ''){
         return 'index';
     }else{
         return $url_last[0];
+    }
+}
+//@ 获取当前action
+function getNowAction($ifGroup = 0){
+    $url = $_SERVER['HTTP_X_REWRITE_URL'] == '' ? $_SERVER['REQUEST_URI'] : $_SERVER['HTTP_X_REWRITE_URL'];
+    $urlArray = explode("/",$url);
+    $url_last = $urlArray[1];
+    $url_last = explode(".",$url_last);
+    $url_last = explode("-" , $url_last[0]);
+    if($ifGroup == 1){
+        //如果有分组则排除group
+        array_shift($url_last);
+    }
+    if($url_last[1] == ''){
+        return 'index';
+    }else{
+        return $url_last[1];
     }
 }
 
