@@ -46,9 +46,9 @@ class Db_mysqli{
 	
 	}
 	public static function getInstance()    {    
-        if(! (self::$_instance instanceof self) ) {    
+        if(! (self::$_instance instanceof self) ) {
             self::$_instance = new self();    
-        }    
+        }
         return self::$_instance;    
     } 
 //------------------连接-----------------------------
@@ -285,6 +285,8 @@ class Db_mysqli{
 	}
 //------------------连缀参数操作-----------------------------
 	public function where($sql=''){
+        $sql = trim($sql);
+        $sql = trim($sql , 'and');
 		$this->_where = $sql;
 		return $this;
 	}
