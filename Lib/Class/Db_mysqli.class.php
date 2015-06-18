@@ -277,7 +277,6 @@ class Db_mysqli{
             $sql = preg_replace("/^and/" , "" , $sql);
         }
         $this->_where = $sql;
-        echo $sql;exit;
         return $this;
     }
     public function limit($limit=''){
