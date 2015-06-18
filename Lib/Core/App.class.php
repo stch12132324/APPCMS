@@ -74,6 +74,8 @@ class App{
 			'Admin',
 			'Mobile',
 		);
+        $_group    = '';
+        $_groupVal = '';
 		if(in_array($_args[0],$ConfigGroupArray)){
 			$_group = array_shift($_args);
 			$_groupVal = $_group."/";
