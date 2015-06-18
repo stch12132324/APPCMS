@@ -13,14 +13,15 @@ function M($_filename){
 /*
 @ 核心函数LC方法 调用 /Lib/Class/
 */
-function LC($_filename){
+function LC($_filename , $params = ''){
 	$_filename = ucfirst($_filename);
 	$_file = BJ_ROOT.'Lib/Class/'.$_filename.".class.php";
 	if(is_file($_file)){
 		include_once $_file;
 		// mysql 和 redis 使用单例模式
-		if($_filename=='Db_mysqli'){
-			return Db_mysqli::getInstance();
+		if($_filename == 'Db_mysqli'){
+			//return Db_mysqli::getInstance();
+            return new Db_mysqli($params);
 		}else{
 			return new $_filename;
 		}
