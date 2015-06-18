@@ -3,44 +3,36 @@
 	
 	remark  : mysqli通用操作类，兼容STMT模式，使用单例模式
 	author  : stch12132324
-	version	: 1.0
-	time	: 2014-07-20
+	version	: 1.0.1
+	time	: 2015-06-18
 	php		: >5.3.0+
 	
 */
 class Db_mysqli{
-    private $conn;
-    private $debug = 1;
-    private $dbhost = DB_HOST;
-    private $dbuser = DB_USER;
-    private $dbpw = DB_PW;
-    private $charset = DB_CHARSET;
-    private $dbname = DB_NAME;
-    private $dbpre = DB_PRE;
 
-    var $rs_type = MYSQLI_ASSOC; // 结果显示方式 array('name'=>'abc')
+//------------------ 定义参数 -----------------------------
+    private $conn;
+    private $debug   = 1;
+    var $dbpre;
+    var $rs_type    = MYSQLI_ASSOC; // 结果显示方式 array('name'=>'abc')
     var $unbuffered = false; // 是否不缓存
-    var $safe_type = 0; // 是否开始stmt模式
+    var $safe_type  = 0; // 是否开始stmt模式
 
     var $table_name; // 表名称
     var $result;
     var $paramType; // stmt 模式下 insert 参数类型
-    var $_where;
-    var $_field;
-    var $_limit;
-    var $_order;
-    var $_parameters;
-    var $_primary;
+    var $_where , $_field , $_limit , $_order , $_parameters , $_primary;
 
     //DEBUG 下查询
     var $query_number = 0;  // 查询次数
     var $query_times;       // 查询时间
-    var $last_query_string = '';   // 最后一次查询的sql语句
+    var $last_query_string = ''; // 最后一次查询的sql语句
 
     private static $_instance;
 
-    function __construct(){
-        $this->connect();
+//------------------ 构造函数 -----------------------------
+    function __construct($dname = ''){
+        $this->connect($dname);
     }
     private function __clone(){
 
@@ -52,9 +44,15 @@ class Db_mysqli{
         return self::$_instance;
     }
 //------------------连接-----------------------------
-    public function connect(){
+    public function connect($dname = ''){
+        // 多数据库模式
+        $dname = $dname == '' ? 'default' : $dname;
+        $dbConfig = json_decode(DB_CONFIG);
+        $dbConfig = $dbConfig->$dname;
+        $this->conn    = new mysqli( $dbConfig->dbhost, $dbConfig->dbuser, $dbConfig->dbpw, $dbConfig->dbname );
+        $this->charset = $dbConfig->charset;
+        $this->dbpre   = $dbConfig->dbpre;
 
-        $this->conn = new mysqli($this->dbhost, $this->dbuser, $this->dbpw, $this->dbname);
         if (mysqli_connect_errno()) throw_exception(mysqli_connect_error());
         if($this->version() > '4.1'){
             $serverset = $this->charset ? "SET NAMES ".$this->charset : '';
@@ -63,18 +61,7 @@ class Db_mysqli{
         }
         return $this->connid;
     }
-//------------------切换数据库-----------------------------
-    public function select_db($dbname = ''){
-        $dbname = $dbname==''?$this->dbname:$dbname;
-        if($this->conn->select_db($dbname)){
-            return true;
-        }else{
-            return false;
-        }
-    }
-    public function select_table($table_name){
-        $this->table_name = $this->dbpre.$table_name;
-    }
+
 //------------------query-----------------------------
     function query($sql){
         if(!is_object($this->conn)){
