@@ -26,7 +26,7 @@ class Db_mysqli{
     //DEBUG 下查询
     var $query_number = 0;  // 查询次数
     var $query_times;       // 查询时间
-    var $last_query_string = ''; // 最后一次查询的sql语句
+    var $last_query_string = '';   // 最后一次查询的sql语句
 
     private static $_instance;
 
@@ -273,7 +273,9 @@ class Db_mysqli{
 //------------------连缀参数操作-----------------------------
     public function where($sql=''){
         $sql = trim($sql);
-        $sql = preg_replace("/^and/" , "" , $sql);
+        if($sql != ''){
+            $sql = preg_replace("/^and/" , "" , $sql);
+        }
         $this->_where = $sql;
         echo $sql;exit;
         return $this;

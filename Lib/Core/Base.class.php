@@ -28,7 +28,6 @@ class Base{
     //@ set某个数据库对象 , 也做了单对象处理（简单单例）
     public function sdb($dname){
         if( !is_object($this->dbs[$dname]) ){
-            echo $dname;
             $this->dbs[$dname] = LC("db_mysqli" , $dname);
             // 兼容旧版 默认 $this->db
             if( $dname =='default' ){
