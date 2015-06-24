@@ -59,7 +59,15 @@ class Action extends Base{
     public function getPost($keyName='' , $filterTypeArr = array()){
         $val = isset($_POST[$keyName]) ? $_POST[$keyName] : '';
         if(!empty($filterTypeArr)){
-            $val = $this->actionFilter($val , $filterTypeArr);
+            if( is_array($val) ){
+                $arr = array();
+                foreach($val as $key=>$v){
+                    $arr[$key] = $this->actionFilter($v , $filterTypeArr);
+                }
+                $val = $arr;
+            }else{
+                $val = $this->actionFilter($val , $filterTypeArr);
+            }
         }
         return $val;
     }
