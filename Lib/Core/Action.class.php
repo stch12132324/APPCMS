@@ -88,7 +88,9 @@ class Action extends Base{
 	*/
 	public function getParams($keyName='' , $filterTypeArr = array()){
         $val = isset($_GET[$keyName]) ? $_GET[$keyName] : '';
-		$val = isset($_POST[$keyName]) ? $_POST[$keyName] : '';
+        if( $val =='' ){
+		    $val = isset($_POST[$keyName]) ? $_POST[$keyName] : '';
+        }
         if(!empty($filterTypeArr)){
             $val = $this->actionFilter($val , $filterTypeArr);
         }
