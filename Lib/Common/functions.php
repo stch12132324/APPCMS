@@ -262,22 +262,6 @@ function getViewUrl(){
     $url = $_SERVER['PHP_SELF'];
     return substr($url,10);
 }
-//-- ¿ò¼ÜµÄID¼ÓÃÜ
-//-- ¿Õ¼äµØÖ·»ìÏý
-function getEncode($string , $type="encode"){
-    if($type=='encode'){
-        return  'Dep'.trim(base64_encode($string),'==').'fpt';
-    }else{
-        $string = substr($string,3);
-        $string = substr($string,0,-3);
-        return base64_decode($string."==");
-    }
-}
-
-function hashUrl($id,$num = 3){
-    $keyLength = 32 - $num;
-    return substr(md5($id.URL_KEY),$keyLength);
-}
 
 if(!function_exists('image_type_to_extension')){
     function image_type_to_extension($type, $dot = true)

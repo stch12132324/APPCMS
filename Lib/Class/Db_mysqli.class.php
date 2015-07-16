@@ -375,7 +375,7 @@ class Db_mysqli{
 //------------------¥ÌŒÛœ‘ æ-----------------------------
     private function show_error($error,$sql = ''){
         if(DB_SHOW_ERROR==1){
-            echo 'MYSQL_ERROR:'.$error.' on ('.$sql.')';
+            echo 'MYSQL_ERROR:'.$error.' on <font color="#f00">" '.$sql.' "</font>';
             exit;
         }
     }
