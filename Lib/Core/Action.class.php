@@ -8,7 +8,8 @@ class Action extends Base{
 	public function __construct(){
 
 	}
-
+	public function beforeAction(){}
+	public function afterAction(){}
     /*
     * äÖÈ¾Ä£°åtpl  name dir group
     */
