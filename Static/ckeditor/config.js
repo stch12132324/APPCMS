@@ -41,4 +41,5 @@ CKEDITOR.editorConfig = function( config ) {
 	config.removeDialogTabs = 'image:advanced;link:advanced';
 	config.enterMode = CKEDITOR.ENTER_BR;
     config.entities = false; //默认为true，改为false防止出现莫名其妙问题
+
 };
