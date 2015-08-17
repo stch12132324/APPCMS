@@ -2,8 +2,13 @@
 class App{
 	//@ 主方法
 	static public function run(){
-
-		$_args = trim(PATH_INFO,"/");
+		if( PATH_INFO == ''){
+			$_args = trim( $_SERVER['REQUEST_URI'] , "/");
+			$_args = explode('.html' , $_args);
+			$_args = $_args[0];
+		}else{
+			$_args = trim(PATH_INFO,"/");
+		}
 		$_args = explode("-",$_args);
 		
 		// 分组
@@ -17,10 +22,10 @@ class App{
 
 		// 获取GET参数
 		self::_initGet($_args);
-		
+
 		// 自定义路由 - 能等待改进
 		self::_initRouter($_module, $_action);
-		
+
 		// 语言包
 		self::_initLang();
 		// 路由进行
@@ -29,7 +34,6 @@ class App{
         require BJ_ROOT."Lib/Core/Action.class.php";
         include BJ_ROOT."Lib/Class/MyException.class.php";
         require $_module_file;
-
 		$act = new $_module_name();
 		if(method_exists($act,$_action)){
             try{
@@ -62,10 +66,8 @@ class App{
         //@ filter注入
         $act->_filter   =  LC("Filter");
         $act->_filter->filterBase();
-		// @
-		$act->beforeAction();
+
 		$act->$_action();
-		$act->afterAction();
 	}
 
 //--------------------------------- 非配置 --------------------------
@@ -75,9 +77,8 @@ class App{
 		$ConfigGroupArray = array( // 后续加入配置文件
 			'Admin',
 			'Mobile',
+            'Api'
 		);
-        $_group    = '';
-        $_groupVal = '';
 		if(in_array($_args[0],$ConfigGroupArray)){
 			$_group = array_shift($_args);
 			$_groupVal = $_group."/";
