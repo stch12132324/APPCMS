@@ -270,6 +270,14 @@ class Db_mysqli{
             return false;
         }
     }
+//------------------自增操作-----------------------------
+    public function incr($field){
+        $where = $this->_where ? ' where '. $this->_where : '';
+        $sql = 'update '.$this->table_name.' set ';
+        $sql .= "".$field."=".$field."+1";
+        $sql = trim($sql ,',').$where;
+        return $this->query($sql);
+    }
 //------------------连缀参数操作-----------------------------
     public function where($sql=''){
         $sql = trim($sql);
