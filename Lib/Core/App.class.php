@@ -67,7 +67,10 @@ class App{
         $act->_filter   =  LC("Filter");
         $act->_filter->filterBase();
 
+        //@ before & after
+        $act->beforeAction();
 		$act->$_action();
+        $act->afterAction();
 	}
 
 //--------------------------------- ∑«≈‰÷√ --------------------------
