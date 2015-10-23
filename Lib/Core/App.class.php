@@ -66,7 +66,6 @@ class App{
         //@ filter注入
         $act->_filter   =  LC("Filter");
         $act->_filter->filterBase();
-
         //@ before & after
         $act->beforeAction();
 		$act->$_action();
@@ -80,7 +79,8 @@ class App{
 		$ConfigGroupArray = array( // 后续加入配置文件
 			'Admin',
 			'Mobile',
-            'Api'
+            'Api',
+            'Unit'
 		);
 		if(in_array($_args[0],$ConfigGroupArray)){
 			$_group = array_shift($_args);
