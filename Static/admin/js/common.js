@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    $(".leftMenu").css("height",$(document.body).height());
+    $(".leftMenu").css("height",$(document).height());
     if ( $.cookie('admin-full-status') == 1 ){
         $(".leftMenu").hide();
         $(".mBody").css('width','100%');
