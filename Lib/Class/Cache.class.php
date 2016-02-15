@@ -83,7 +83,7 @@ class Cache{
     */
     public function getFileCacheDir( $key = ''){
         $file = md5($key);
-        return BJ_ROOT.'Cache/Caches/'.date('m').'/'.substr($file , 0 , 4).'/'.$file;
+        return BJ_ROOT.'Cache/Caches/'.substr($file , 0 , 3).'/'.$file;
     }
     /*
      * @file 模式根据key判断文件路径，如果不存在则创建
@@ -91,11 +91,14 @@ class Cache{
     */
     public function createFileCacheDir($key = ''){
         $dir = md5($key);
-        $dir = 'Cache/Caches/'.date('m').'/'.substr($dir , 0 , 4);
+        $dir = 'Cache/Caches/'.substr($dir , 0 , 3);
         if( !is_dir(BJ_ROOT.$dir) ){
             createdir($dir);
         }
         return true;
     }
+    /*
+     * @file
+     */
 }
 ?>

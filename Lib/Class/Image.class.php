@@ -10,58 +10,121 @@ class Image {
     var $im;
     function __construct($file = ''){
         if(is_file($file)){
-            $this->scr_file=$file;
-            $this->type=substr(strrchr($this->scr_file,"."),1);
-            if($this->type=="jpg"){
+            $this->scr_file = $file;
+            $this->type = substr(strrchr($this->scr_file,".") , 1);
+            if( $this->type == "jpg" ){
                 $this->im = imagecreatefromjpeg($this->scr_file);
             }
-            if($this->type=="gif"){
+            if( $this->type == "gif" ){
                 $this->im = imagecreatefromgif($this->scr_file);
             }
-            if($this->type=="png"){
+            if( $this->type == "png" ){
                 $this->im = imagecreatefrompng($this->scr_file);
             }
-            $this->scr_width = imagesx($this->im);
+            $this->scr_width  = imagesx($this->im);
             $this->scr_height = imagesy($this->im);
         }
     }
-    function thumb_image($wid,$hei,$dir="") {
-        $this->thumb_width=$wid;
-        $this->thumb_height=$hei;
-        $this->thumb_file="thumb_".date("YmdHis",TIME).random(3,'1234560789').'.'.$this->type;
-        if(($this->scr_width-$this->thumb_width)>($this->scr_height-$this->thumb_height)){
-            $this->thumb_height=($this->thumb_width/$this->scr_width)*$this->scr_height;
-        }else{
-            $this->thumb_width=($this->thumb_height/$this->scr_height)*$this->scr_width;
-        }
-        //echo $this->thumb_width,$this->thumb_height;
-        if($this->type != 'gif' && function_exists('imagecreatetruecolor')){
-            $thumbimg = imagecreatetruecolor($this->thumb_width, $this->thumb_height);
-        }else{
-            $thumbimg = imagecreate($this->thumb_width,$this->thumb_height);
-        }
-        if(function_exists('imagecopyresampled')){
-            imagecopyresampled($thumbimg, $this->im, 0, 0, 0, 0, $this->thumb_width, $this->thumb_height, $this->scr_width, $this->scr_height);
-        }else{
-            imagecopyresized($thumbimg,$this->im, 0, 0, 0, 0, $$this->thumb_width, $this->thumb_height,  $this->scr_width, $this->scr_height);
-        }
-        if($this->type=='gif' || $this->type=='png')
-        {
-            $background_color  =  imagecolorallocate($thumbimg,  0, 255, 0);  //  指派一个绿色
-            imagecolortransparent($thumbimg, $background_color);  //  设置为透明色，若注释掉该行则输出绿色的图
-        }
-        $dir = UPLOAD_ROOT.$dir;
-        switch ($this->type) {
+	/*
+     * @ 强制改变图片大小和品质
+     */
+    public function imageForceSize( $pinzhi = 70){
+        $t_width  = $this->thumb_width;
+        $src_file = $this->scr_file;
+        if (!file_exists($src_file)) return false;
+        $src_info = getImageSize($src_file);
+        //如果来源图像小于或等于缩略图则拷贝源图像作为缩略图
+        $new_width = $src_info[0] > $t_width ? $t_width : $src_info[0];
+        //按比例计算缩略图大小
+        $new_height = round( ( $new_width / $src_info[0] ) * $src_info[1]);
+		
+        //取得文件扩展名
+        $fileext = $this->fileext($src_file);
+        switch ($fileext) {
             case 'jpg' :
-                ImageJPEG($thumbimg,$dir.$this->thumb_file); break;
-            case 'gif' :
-                ImageGIF($thumbimg,$dir.$this->thumb_file); break;
+                $src_img = ImageCreateFromJPEG($src_file);
+            break;
             case 'png' :
-                ImagePNG($thumbimg,$dir.$this->thumb_file); break;
+                $src_img = ImageCreateFromPNG($src_file);
+            break;
+            case 'gif' :
+                $src_img = ImageCreateFromGIF($src_file);
+            break;
         }
-        imagedestroy($this->im);
-        imagedestroy($thumbimg);
-        return $this->thumb_file;
+        //创建一个真彩色的缩略图像
+        $thumb_img = ImageCreateTrueColor( $new_width , $new_height );
+        if (function_exists('imagecopyresampled')) {
+            @ImageCopyResampled($thumb_img,$src_img,0,0,0,0,$new_width,$new_height,$src_info[0],$src_info[1]);
+        } else {
+            @ImageCopyResized($thumb_img,$src_img,0,0,0,0,$new_width,$new_height,$src_info[0],$src_info[1]);
+        }
+        //生成缩略图,（可能要另外名字） PNG也强制JPG
+        switch ($fileext) {
+            case 'jpg' :
+                imagejpeg($thumb_img , $src_file, $pinzhi);
+            break;
+            case 'gif' :
+                imagegif($thumb_img , $src_file , $pinzhi);
+            break;
+            case 'png' :
+			    $src_file = str_replace('.png' , '.jpg' , $src_file);	
+				imagejpeg($thumb_img , $src_file , $pinzhi);
+				//imagepng($thumb_img , $src_file , $pinzhi);
+            break;
+        }
+        //销毁临时图像
+        @ImageDestroy($src_img);
+        @ImageDestroy($thumb_img);
+        return $src_file;
+    }
+    /*
+     * 图说专用，根据大小调整或者填充图片 使用css控制高度，差别比小于1.2的强制拉伸宽度
+     */
+    public function imageForceFill( $maxWidth = '' , $maxHeight = '' ){
+        $src_file = $this->scr_file;
+        if (!file_exists($src_file)) return false;
+        $src_info = getImageSize($src_file);
+        //@ 如果原图宽度小于maxWidth则，不改变宽度
+        $new_width = $src_info[0] > $maxWidth ? $maxWidth : $src_info[0];
+        //@ 根据宽度算缩放完的高度
+        $new_height = round( ( $new_width / $src_info[0] ) * $src_info[1]);
+        //@ 如果缩放完高度超出了maxHeight，则根据高度获得新宽度
+        if( $new_height > $maxHeight ){
+            $new_height = $maxHeight;
+            $new_height = round( ( $new_height / $src_info[1] ) * $src_info[0]);
+        }
+        //-- 超过标准比例1.3倍强制填充
+        $maxBili = round($maxHeight / $maxWidth );//超过标准比例1.2倍强制填充   0.65
+        $nowBili = round($new_height / $new_width );
+        //@ 只有比例小于1.2时候强制根据高度缩放图片，大于1.2时候不控制，让css填黑色
+        if( ( $nowBili < $maxBili * 1.2 ) && $nowBili < 1 ){
+            $new_width  = round( ($maxWidth / $maxHeight ) * $new_height);
+            //取得文件扩展名
+            $fileext = $this->fileext($src_file);
+            //创建一个真彩色的缩略图像
+            $thumb_img = ImageCreateTrueColor( $new_width , $new_height );
+            if (function_exists('imagecopyresampled')) {
+                @ImageCopyResampled( $thumb_img , $this->im , 0 , 0 , 0 , 0 , $new_width , $new_height , $src_info[0] , $src_info[1] );
+            } else {
+                @ImageCopyResized( $thumb_img , $this->im ,0 , 0 , 0 , 0 , $new_width , $new_height , $src_info[0] , $src_info[1] );
+            }
+            //生成缩略图,（可能要另外名字）
+            switch ($fileext) {
+                case 'jpg' :
+                    imagejpeg($thumb_img , $src_file);
+                break;
+                case 'gif' :
+                    imagegif($thumb_img , $src_file);
+                break;
+                case 'png' :
+                    imagepng($thumb_img , $src_file);
+                break;
+            }
+            //销毁临时图像
+            @ImageDestroy($src_img);
+            @ImageDestroy($thumb_img);
+        }
+        return true;
     }
     /*
      * 首页长传图片自带文字版权水印脚本
@@ -69,12 +132,13 @@ class Image {
     public function waterMark(){
         //创建画布高度为图片高度+30px
         $new_height = 30;
+        if($this->scr_width == '') return;
         $bgIm = imagecreate($this->scr_width, $new_height);
         imagecolorallocate($bgIm, 33, 78, 137);
         //底部加入文字
         $text_color = imagecolorallocate($bgIm, 255, 255, 255); //文字颜色
         $text = '龙腾网 http://www.ltaaa.com 倾听各国草根真实声音，纵论全球平民眼中世界'; //加入文字
-        imagettftext($bgIm, 10, 0, 5, $new_height - 8, $text_color , BJ_ROOT.'/static/font/mcyahei.ttf' ,iconv("GBk","UTF-8", $text)); // 字体, 斜度, x, y
+        imagettftext($bgIm, 10, 0, 5, $new_height - 8, $text_color , BJ_ROOT.'/Static/font/mcyahei.ttf' ,iconv("GBk","UTF-8", $text)); // 字体, 斜度, x, y
         //将文字的图片拷贝到旧图片底部
         imagecopymerge($this->im, $bgIm, 0, $this->scr_height - 30, 0, 0, $this->scr_width, 30, 100);
         //保存文件
@@ -83,15 +147,15 @@ class Image {
         imagedestroy($this->im);
     }
     /*
-     * 文字转化图片带版权 postmake目录下，定期进行清理，一个月清理一次，只保留当月
+     * 文字转化图片带版权 postmake目录下，定期进行清理
      */
-    public function txtToImg($string = '' , $author = ''){
+    public function txtToImg($string = '' , $author = '' , $contentid = '' , $pic_num = '' , $type = ''){
         //header("Content-type: image/jpeg");
         $txt_width  = 698;
         //$txt_height = 300;
-        $img_dir  = '/uploadfile/PostMake/'.date('m').'/'.date('d');
+        $img_dir  = '/uploadfile/PostMake/'.substr($contentid , -2).'/'.$contentid;
         if(!is_dir($img_dir)) createdir($img_dir);
-        $img_file = $img_dir.'/'.time().rand(10000,99999).'.jpg';
+        $img_file = $img_dir.'/'.$type.'-'.$pic_num.'.jpg';
         mb_internal_encoding("UTF-8"); // 设置编码
         $fontFace = BJ_ROOT.'/Static/font/mcyahei.ttf';
         $string = strip_tags($string);
@@ -150,6 +214,10 @@ class Image {
         $parts_1  = array_slice($parts, 0 ,$addPoint);
         $parts_2  = array_slice($parts, $addPoint, $line);
         return implode("\n",$parts_1)."\n\n龙腾网 http://www.ltaaa.com 倾听各国草根真实声音，纵论全球平民眼中世界 译文作者：".$author."\n".implode("\n",$parts_2);
+    }
+	//获取文件扩展名
+    function fileext($filename) {
+        return strtolower(substr(strrchr($filename,'.'),1,10));
     }
 }
 ?>

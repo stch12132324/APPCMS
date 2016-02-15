@@ -3,14 +3,19 @@ class App{
 	//@ 主方法
 	static public function run(){
 		if( PATH_INFO == ''){
-			$_args = trim( $_SERVER['REQUEST_URI'] , "/");
+			//apache
+			/*$_args = trim( $_SERVER['REQUEST_URI'] , "/");
 			$_args = explode('.html' , $_args);
 			$_args = $_args[0];
+			*/
+			// nginx
+			$_args = trim( $_SERVER['DOCUMENT_URI'] , "/");
+			$_args = explode("/" , $_args);
+			$_args = $_args[1];
 		}else{
 			$_args = trim(PATH_INFO,"/");
 		}
 		$_args = explode("-",$_args);
-		
 		// 分组
 		list($_group, $_groupVal)			=  	self::_initGroup($_args);
 		
@@ -80,7 +85,7 @@ class App{
 			'Admin',
 			'Mobile',
             'Api',
-            'Unit'
+            'Plugin',
 		);
 		if(in_array($_args[0],$ConfigGroupArray)){
 			$_group = array_shift($_args);

@@ -91,6 +91,9 @@ class Upfile{
 			$img_info = getimagesize($_FILES[$field]['tmp_name'][$key]);  // 3个返回值 width height type  其中type可以判断真类型及mita类型
 
             $fileext = $this->fileext($_FILES[$field]['name'][$key]); //获取文件扩展名
+			if( !( $fileext == 'jpg' || $fileext == 'png' || $fileext == 'gif' ) ){
+				exit;	
+			}
             $filename = $this->time.mt_rand(100,999).'.'.$fileext; //生成文件名
             $filedir = $this->dir;    //附件实际存放目录
             $filesize = $_FILES[$field]['size'][$key]; //文件大小

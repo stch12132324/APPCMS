@@ -20,7 +20,7 @@ define('DB_SHOW_ERROR',1);        // 是否显示数据库错误
 define('CACHE_PATH'  , BJ_ROOT.'date/cache/'); //缓存默认存储路径
 define('ADS_PATH'    , BJ_ROOT.'Static/ads/');
 define('PLUGIN_PATH' , BJ_ROOT.'Lib/Plugin/');
-
+define('SINGLE_PATH' , BJ_ROOT.'Cache/Single/');
 //模板相关配置
 define('TPL_ROOT'   , BJ_ROOT.'Tpl/'); //模板保存物理路径
 define('TPL_NAME'   , 'Default/'); 	//当前模板方案目录
@@ -29,10 +29,12 @@ define('CPD_ROOT'   , BJ_ROOT.'Cache/Compiled/');
 define('CACHE_DIR'  , BJ_ROOT."Cache/Caches");
 define('COMPILE_DIR', BJ_ROOT."Cache/Compiled");
 define('IN_BM'      , true);
-
+define('CSS_MERGE'  , true);//是否开始css,js合并
+define('CSS_MERGE_ZIP' , true);//是否开启css,js压缩
 //COOKIE
+define('COOKIE_PATH' , '/');
 define('C_DOMAIN_AREA','/');
-
+define('COOKIE_KEY' , 'lt_ck_');
 //LOG
 define('LOG_OPEN'     , '1');//基础日志开关
 define('LOG_OPEN_ALL' , '1');//全部类型日志开关
@@ -47,7 +49,8 @@ define('BIG_IMG_HEIGHT' , '600');
 define('CHARSET' , 'gbk');
 define('TIMEZONE' , 'Etc/GMT-8');
 define('AUTH_KEY' , 'YUsf120sDR'); //Cookie密钥
-define('PASSWORD_KEY', 'werbd567FD');
-define('URL_KEY','sideRdpfvt*$6688');//url的key
+define('PASSWORD_KEY', 'ltFDfsd');
+define('URL_KEY','Ytsdbtlas');//url的key
+define('TOKEN_KEY_NAME' , 'lt_user_keys');
 define('ALLOWED_HTMLTAGS', '<a><p><br><hr><h1><h2><h3><h4><h5><h6><font><u><i><b><strong><div><span><ol><ul><li><img><table><tr><td><map>'); //前台发布信息允许的HTML标签，可防止XSS跨站攻击
 ?>

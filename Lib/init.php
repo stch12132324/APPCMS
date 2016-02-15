@@ -4,7 +4,6 @@
 // +@ By Stch12132324
 // +@ Time:2014-08-08
 // +----------------------------------------------------------------------
-
 define('BJ_ROOT', str_replace("\\", '/', substr(dirname(__FILE__), 0, -3)));
 define('MICROTIME_START',microtime());
 define('TIME', time());
@@ -14,9 +13,10 @@ unset($HTTP_ENV_VARS, $HTTP_POST_VARS, $HTTP_GET_VARS, $HTTP_POST_FILES, $HTTP_C
 @ 包含文件
 */
 require BJ_ROOT.'Config/config.inc.php';
+require BJ_ROOT.'Config/cache.inc.php';
 include BJ_ROOT.'Lib/Common/common.php';
 include BJ_ROOT.'Lib/Common/functions.php';
-if(is_file(BJ_ROOT.'Function/common.php')) include BJ_ROOT.'Function/common.php';
+if(is_file(BJ_ROOT.'Function/common.func.php')) include BJ_ROOT.'Function/common.func.php';
 require BJ_ROOT.'Lib/Core/App.class.php';
 /*
 @ 定义系统常量
